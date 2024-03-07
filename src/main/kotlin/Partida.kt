@@ -46,13 +46,7 @@ class Partida(private val jugadores: List<Jugador>,val listaArmas:List<Arma>) {
 
             if (alguienMuere()) estadoPartida = false
 
-            println("hola")
-            // Si el cargador está vacío, reiniciar la escopeta
-
-            //if (arma.tambor.count { it.cargado } == 0) {
-            //    val nuevaArmaAleatoria = listaArmas.random()
-            //    arma = nuevaArmaAleatoria
-            //}
+            // Si el cargador está vacío, se elige otra arma
 
             if ( arma.cargador.count { it.cargado } == 0){
                 reasignarCargadores()
@@ -65,7 +59,7 @@ class Partida(private val jugadores: List<Jugador>,val listaArmas:List<Arma>) {
 
     fun reasignarCargadores(){
         listaArmas.forEach {
-            it.cargador = it.cargarTambor(it.elegirNumBalas())
+            it.cargador = it.recargar()
         }
     }
 
@@ -95,7 +89,7 @@ class Partida(private val jugadores: List<Jugador>,val listaArmas:List<Arma>) {
     fun printearCosas(jugador: Jugador){
         // Imprimir el arma a usar y sus balas
         println("----------------------------------------------------------------------------")
-        println("Ha tocado $arma")
+        println(arma.mostrarInfo())
         println("Hay ${arma.cargador.size} balas en el cargador")
         println("${arma.cargador.count{ it.cargado}} estan cargadas")
 
@@ -243,7 +237,7 @@ class Partida(private val jugadores: List<Jugador>,val listaArmas:List<Arma>) {
         // Iterar a través de todos los jugadores
         for (jugador in jugadores) {
             // Verificar si el jugador actual tiene 0 de vida
-            if (jugador.vida == 0) return true
+            if (jugador.vida <= 0) return true
         }
         return false
     }

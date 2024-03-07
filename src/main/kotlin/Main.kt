@@ -56,7 +56,7 @@ fun main() {
     val armas = listOf(
        Escopeta(8,1),
        EscopetaDobleCanon(2,2),
-       Revolver(2,1)
+       Revolver(6,1)
     )
 
 
