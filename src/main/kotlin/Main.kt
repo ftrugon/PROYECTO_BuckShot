@@ -18,6 +18,7 @@ fun crearlistaaleatoria(numitems:Int,todosobjetos:List<Objeto>): MutableList<Obj
  * Funcion principal del programa , donde se crea la partida los jugadores y sus items
  */
 fun main() {
+
     // Lista de todos los objetos disponibles
     val todosObjetos = listOf(
         Cigarro(),
@@ -30,12 +31,16 @@ fun main() {
 
     // Generación aleatoria del número de elementos para cada jugador
     val aleatorio1 = Random.nextInt(1, 4)
+
+
+
     // Creación de lista de objetos aleatorios para el jugador 1
     val listaItemsJugador1 = crearlistaaleatoria(aleatorio1, todosObjetos)
     // Creación de lista de objetos aleatorios para el jugador 2
     val listaItemsJugador2 = crearlistaaleatoria(aleatorio1, todosObjetos)
 
-    // Generación aleatoria del número de elementos para cada jugador
+
+    // Generación aleatoria de vida para cada jugador
     val aleatorio2 = Random.nextInt(3, 6)
     // Creación de los jugadores con sus respectivas listas de objetos aleatorios
     val jugador1 = Jugador("Fran", aleatorio2, listaItemsJugador1)
@@ -47,8 +52,18 @@ fun main() {
         jugador2
     )
 
+    // Lista de armas
+    val armas = listOf(
+       Escopeta(8,1),
+       EscopetaDobleCanon(2,2),
+       Revolver(2,1)
+    )
+
+
     // Creación de la partida con la lista de jugadores
-    val partida = Partida(listaJugadores)
+
+
+    val partida = Partida(listaJugadores,armas)
     // Iniciar la partida
     partida.iniciarPartida()
 }

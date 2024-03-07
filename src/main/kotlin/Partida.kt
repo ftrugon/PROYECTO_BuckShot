@@ -2,9 +2,9 @@
  * Clase que representa una partida del juego.
  * @property jugadores La lista de jugadores que participan en la partida.
  */
-class Partida(private val jugadores: List<Jugador>) {
+class Partida(private val jugadores: List<Jugador>,val listaArmas:List<Arma>) {
     private var estadoPartida = false
-    var escopeta = Escopeta()
+    var arma = cambiarArma()
     var danio = 1
     private var cont = 1
     var saltarTurno = false
@@ -23,48 +23,88 @@ class Partida(private val jugadores: List<Jugador>) {
             // Elegir el jugador activo para esta ronda
             val jugador = elegirJugador(cont)
 
-            // Reiniciar el daño para esta ronda y reinicia saltarturno por si se han usado las esposas
-            danio = 1
+            // Reiniciar el daño para esta ronda
+            danio = arma.danio
 
-
-            // Imprimir información sobre la ronda y los jugadores
-            println("----------------------------------------------------------------------------")
-            println("Ronda $cont, ${jugador.nombre}")
-            println("${jugadores[0].nombre}:${jugadores[0].vida}")
-            println("${jugadores[1].nombre}:${jugadores[1].vida}")
+            printearCosas(jugador)
 
             // Permitir al jugador usar objetos
+
             usarObjeto(jugador)
 
             // Mostrar las opciones disponibles
             opciones()
+
             // Elegir la opción del jugador
             val opcion = elegirOpcion()
 
             // Realizar la acción correspondiente según la opción elegida
-            if (opcion == 1) {
-                dispararme(jugador, danio)
-            } else {
-                dispararle(jugador, danio)
-                // Si se activa la opción de saltar turno, avanzar al siguiente jugador
-                if (saltarTurno) {
-                    cont++
-                    val jugador2 = elegirJugador(cont)
-                    println("Se ha saltado el turno de ${jugador2.nombre}")
 
-                    // Vuelve saltarturno al estodo original para que no se vuelva a saltar el turno del oponente
-                    saltarTurno = false
-                }
-                cont++
-            }
+            gestiorarDisparo(opcion,jugador)
 
             // Verificar si alguien ha muerto durante esta ronda
+
             if (alguienMuere()) estadoPartida = false
+
+            println("hola")
             // Si el cargador está vacío, reiniciar la escopeta
-            if (escopeta.tambor.count { it.cargado } == 0) escopeta = Escopeta()
+
+            //if (arma.tambor.count { it.cargado } == 0) {
+            //    val nuevaArmaAleatoria = listaArmas.random()
+            //    arma = nuevaArmaAleatoria
+            //}
+
+            if ( arma.cargador.count { it.cargado } == 0){
+                reasignarCargadores()
+                arma = cambiarArma()
+            }
+
         } while (estadoPartida)
     }
 
+
+    fun reasignarCargadores(){
+        listaArmas.forEach {
+            it.cargador = it.cargarTambor(it.elegirNumBalas())
+        }
+    }
+
+    fun cambiarArma():Arma{
+        return listaArmas.random()
+    }
+
+
+    fun gestiorarDisparo(opcion:Int,jugador: Jugador){
+        if (opcion == 1) {
+            dispararme(jugador, danio)
+        } else {
+            dispararle(jugador, danio)
+            // Si se activa la opción de saltar turno, avanzar al siguiente jugador
+            if (saltarTurno) {
+                cont++
+                val jugador2 = elegirJugador(cont)
+                println("Se ha saltado el turno de ${jugador2.nombre}")
+
+                // Vuelve saltarturno al estodo original para que no se vuelva a saltar el turno del oponente
+                saltarTurno = false
+            }
+            cont++
+        }
+    }
+
+    fun printearCosas(jugador: Jugador){
+        // Imprimir el arma a usar y sus balas
+        println("----------------------------------------------------------------------------")
+        println("Ha tocado $arma")
+        println("Hay ${arma.cargador.size} balas en el cargador")
+        println("${arma.cargador.count{ it.cargado}} estan cargadas")
+
+        // Imprimir información sobre la ronda y los jugadores
+        println("----------------------------------------------------------------------------")
+        println("Ronda $cont, ${jugador.nombre}")
+        println("${jugadores[0].nombre}:${jugadores[0].vida}")
+        println("${jugadores[1].nombre}:${jugadores[1].vida}")
+    }
 
     /**
      * Método para permitir al jugador usar objetos durante su turno.
@@ -133,7 +173,7 @@ class Partida(private val jugadores: List<Jugador>) {
      */
     private fun dispararme(jug: Jugador, danio: Int) {
         // Verificar si el disparo es exitoso
-        if (escopeta.disparo()) {
+        if (arma.disparo()) {
             // Reducir la vida del jugador según el daño especificado
             jug.vida -= danio
         }
@@ -146,7 +186,7 @@ class Partida(private val jugadores: List<Jugador>) {
      */
     private fun dispararle(jug: Jugador, danio: Int) {
         // Verificar si el disparo es exitoso
-        if (escopeta.disparo()) {
+        if (arma.disparo()) {
             // Identificar al oponente del jugador actual
             val oponente = if (jug == jugadores[0]) jugadores[1] else jugadores[0]
             // Reducir la vida del oponente según el daño especificado
